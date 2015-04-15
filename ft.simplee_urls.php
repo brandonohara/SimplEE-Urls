@@ -11,25 +11,31 @@
 		);
 		
 		function _save_url($data){
-			if(strpos($data, "http://") !== 0 && strpos($data, "https://") !== 0)
-				$data = "http://".$data;
-				
-			if(!filter_var($data, FILTER_VALIDATE_URL)){
-				ee()->output->show_user_error('general', $this->field_name.": The url you entered is not valid.");
+			if($data && $data != ''){
+				if(strpos($data, "http://") !== 0 && strpos($data, "https://") !== 0)
+					$data = "http://".$data;
+					
+				if(filter_var($data, FILTER_VALIDATE_URL) === false){
+					ee()->output->show_user_error('general', $data." is not a valid url.");
+				}
 			}
 			return $data;
 		}
 		
 		function install(){
-			return array('key' => '');
+			return array();
 		}
 		
 		function display_field($data){
-			return form_input($this->field_id, $data);
+			return form_input(array(
+	            'name'  => $this->field_name,
+	            'id'    => $this->field_id,
+	            'value' => $data
+	        ));
 		}
 		
 		function save($data){
-			return $this->_save_url(ee()->input->post($this->field_id));
+			return $this->_save_url($data);
 		}
 		
 		function replace_tag($data, $params = array(), $tagdata = FALSE){
@@ -45,7 +51,7 @@
 	    }
 	    
 	    function save_cell($data){
-			return $this->_save_url(ee()->input->post($this->field_id));
+			return $this->_save_url($data);
 	    }
 	    
 	    /* ========================================================
@@ -53,6 +59,10 @@
 	
 		public function accepts_content_type($name){
 		    return ($name == 'channel' || $name == 'grid');
+		}
+		
+		function grid_save($data){
+			return $this->_save_url($data);
 		}
 	}
 /* End of file ft.simplee_urls.php */
